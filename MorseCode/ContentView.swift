@@ -1,15 +1,8 @@
-//
-//  ContentView.swift
-//  MorseCode
-//
-//  Created by Joseph Brinker on 3/22/25.
-//
-
 import SwiftUI
 import AVFoundation
 
 struct ContentView: View {
-    
+  
     @State private var inputText: String = ""
     @State private var outputText: String = ""
     @State private var isEncodingMode: Bool = true
@@ -178,9 +171,12 @@ struct ContentView: View {
 extension View {
     func hideKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+
     }
 }
 
-#Preview {
-    ContentView()
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
 }
