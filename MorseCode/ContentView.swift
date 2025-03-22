@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AVFoundation
 
 struct ContentView: View {
     
@@ -13,25 +14,6 @@ struct ContentView: View {
     @State private var outputText: String = ""
     @State private var isEncodingMode: Bool = false
     
-//    var body: some View {
-//        VStack {
-//            
-//            Picker("Mode", selection: $mode) {
-//                Text("Text").tag(true)
-//                Text("Morse").tag(false)
-//            }
-//            
-//            
-//            TextField("Enter Morse Code", text: $input)
-//            
-//            Text("Translated Morse: \(translateCode(morseCode: input))")
-//            
-//            
-//            Text(translateCode(morseCode: ".... . .-.. .-.. --- / .-- --- .-. .-.. -.."))
-//            Text(translateText(text: "Hello World"))
-//        }
-//        .padding()
-//    }
     var body: some View {
             NavigationView {
                 VStack(spacing: 20) {
@@ -62,33 +44,23 @@ struct ContentView: View {
                                     .stroke(Color.gray, lineWidth: 1)
                             )
                             .padding(.horizontal)
+                            .onChange(of: inputText) { newText in
+                                if isEncodingMode {
+                                    outputText = translateText(text: inputText)
+                                } else {
+                                    outputText = translateCode(morseCode: inputText)
+                                }
+                            }
+                        
                     }
-                    
-                    // Convert button
-                    Button(action: {
-                        if isEncodingMode {
-                            outputText = translateText(text: inputText)
-                        } else {
-                            outputText = translateCode(morseCode: inputText)
-                        }
-                        // Dismiss keyboard
-                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                    }) {
-                        Text("Convert")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(Color.blue)
-                            .cornerRadius(10)
-                            .padding(.horizontal)
-                    }
+
                     
                     // Output field
                     VStack(alignment: .leading) {
                         Text(isEncodingMode ? "Morse Code:" : "Decoded Text:")
                             .font(.headline)
                             .padding(.leading)
+                        
                         
                         TextEditor(text: $outputText)
                             .frame(height: 100)
@@ -99,6 +71,20 @@ struct ContentView: View {
                             )
                             .padding(.horizontal)
                             .disabled(true)
+                    }
+                    // Flash button
+                    Button(action: {
+
+
+                    }) {
+                        Text("Flash Morse Code")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color.black)
+                            .cornerRadius(10)
+                            .padding(.horizontal)
                     }
                     
                     // Copy button

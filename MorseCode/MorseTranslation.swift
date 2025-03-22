@@ -49,21 +49,39 @@ let morseCodeDictionary: [Character: String] = [
     "9": "----."
     ]
 
+// Create the reverse dictionary for more efficient lookups
+let codeToMorseDict: [String: Character] = {
+    var result: [String: Character] = [:]
+    for (char, morse) in morseCodeDictionary {
+        result[morse] = char
+    }
+    return result
+}()
+
 func translateCode(morseCode: String) -> String {
-    var translatedText: [Character] = []
+    // Replace ellipsis with three dots
+    var processedMorseCode = morseCode.replacingOccurrences(of: "…", with: "...")
     
-    for morseCharacter in morseCode.split(separator: " ") {
+    // Handle en dash DO NOT TOUCH THE HYPHEN IN of: THIS HYPHEN IS FOR A COMBINATION OF 2
+    processedMorseCode = processedMorseCode.replacingOccurrences(of: "—", with: "--")
+    
+    // Handle em dash DO NOT TOUCH THE HYPHEN IN of: THIS HYPHEN IS FOR A COMBINATION OF 4
+    processedMorseCode = processedMorseCode.replacingOccurrences(of: "–", with: "----")
+    
+    
+    // Split the input by spaces
+    let morseCharacters = processedMorseCode.split(separator: " ")
+    var translatedText = ""
+    
+    for morseCharacter in morseCharacters {
         if morseCharacter == "/" {
             translatedText.append(" ")
-        }
-        for (character, code) in morseCodeDictionary {
-            if code == String(morseCharacter) {
-                translatedText.append(character)
-            }
+        } else if let character = codeToMorseDict[String(morseCharacter)] {
+            translatedText.append(character)
         }
     }
     
-    return String(translatedText)
+    return translatedText
 }
 
 func translateText(text: String) -> String {
