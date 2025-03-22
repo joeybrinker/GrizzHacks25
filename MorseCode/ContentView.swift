@@ -13,7 +13,6 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-            
             TextField("Enter Morse Code", text: $input)
             
             Text("Translated Morse: \(translateText(text: input))")
