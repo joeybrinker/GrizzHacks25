@@ -13,6 +13,7 @@ struct ContentView: View {
     @State private var inputText: String = ""
     @State private var outputText: String = ""
     @State private var isEncodingMode: Bool = false
+    @StateObject private var morseEncoder = MorseCodeEncoder()
     
     var body: some View {
             NavigationView {
@@ -51,6 +52,7 @@ struct ContentView: View {
                                     outputText = translateCode(morseCode: inputText)
                                 }
                             }
+                            .disabled(morseEncoder.isFlashing)
                         
                     }
 
@@ -74,18 +76,22 @@ struct ContentView: View {
                     }
                     // Flash button
                     Button(action: {
-
-
+                        if morseEncoder.isFlashing {
+                            morseEncoder.stopFlashing()
+                        } else {
+                            morseEncoder.startFlashing(for: outputText)
+                        }
                     }) {
-                        Text("Flash Morse Code")
+                        Text(morseEncoder.isFlashing ? "Stop Flashing" : "Flash Morse Code")
                             .font(.headline)
                             .foregroundColor(.white)
                             .padding()
                             .frame(maxWidth: .infinity)
-                            .background(Color.black)
+                            .background(morseEncoder.isFlashing ? Color.red : Color.black)
                             .cornerRadius(10)
                             .padding(.horizontal)
                     }
+                    .disabled(!isEncodingMode)
                     
                     // Copy button
                     Button(action: {
@@ -105,6 +111,9 @@ struct ContentView: View {
                     Button(action: {
                         inputText = ""
                         outputText = ""
+                        if morseEncoder.isFlashing {
+                            morseEncoder.stopFlashing()
+                        }
                     }) {
                         Label("Clear", systemImage: "trash")
                             .font(.headline)
