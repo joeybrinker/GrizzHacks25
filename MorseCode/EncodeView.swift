@@ -2,7 +2,7 @@ import SwiftUI
 import AVFoundation
 
 struct EncodeView: View {
-    @StateObject private var morseEncoder = MorseCodeEncoder()
+    @StateObject private var morseEncoder = MorseCodeService()
     @State private var inputText: String = ""
     
     var body: some View {

@@ -3,6 +3,7 @@ import SwiftUI
 struct ContentView: View {
     @State private var showEncodeView = false
     @State private var showDecodeView = false
+    @State private var showTwoWayView = false
     
     var body: some View {
         NavigationView {
@@ -59,7 +60,32 @@ struct ContentView: View {
                         .foregroundColor(.white)
                         .cornerRadius(15)
                     }
+                    
+                    //Two way communication system
+                    // Decode Button
+                    NavigationLink(destination: TwoWayView(), isActive: $showTwoWayView) {
+                        EmptyView()
+                    }
+                    
+                    Button(action: {
+                        showTwoWayView = true
+                    }) {
+                        HStack {
+                            Image(systemName: "message.fill")
+                                .font(.title2)
+                            Text("Two Way Chat")
+                                .font(.title2)
+                                .fontWeight(.semibold)
+                        }
+                        .frame(width: 250, height: 60)
+                        .background(Color.green)
+                        .foregroundColor(.white)
+                        .cornerRadius(15)
+                    }
+                    
+                    
                 }
+                
             }
             .navigationBarHidden(true)
         }
