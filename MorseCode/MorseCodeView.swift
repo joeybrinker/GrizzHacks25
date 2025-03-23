@@ -202,9 +202,6 @@ struct MorseCodeView: View {
                 Image(systemName: isCameraActive ? "stop.circle" : "play.circle")
                     .imageScale(.large)
             })
-            .onAppear {
-                startCamera()
-            }
             .onDisappear {
                 stopCamera()
             }

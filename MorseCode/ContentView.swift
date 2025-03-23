@@ -147,7 +147,7 @@ struct ContentView: View {
                     Spacer().frame(height: 20)
                 }
                 .padding(.top, 10)
-                .navigationTitle("Morse Code Translator")
+                .navigationTitle("Translate")
                 .toolbar {
                     ToolbarItemGroup(placement: .keyboard) {
                         Spacer()
