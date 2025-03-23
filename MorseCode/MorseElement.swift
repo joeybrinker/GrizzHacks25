@@ -5,7 +5,6 @@
 //  Created by Joseph Brinker on 3/22/25.
 //
 
-
 import SwiftUI
 import AVFoundation
 
@@ -39,11 +38,49 @@ class MorseCodeEncoder: ObservableObject {
     // Published properties to be observed by views
     @Published var isFlashing: Bool = false
     @Published var flashColor: Color = .black
+    @Published var isSoundEnabled: Bool = true
     
     // Private properties
     private var morseSequence: [MorseElement] = []
     private var currentElementIndex: Int = 0
     private var timer: Timer?
+    
+    // Audio players for quacking sounds
+    private var dotQuackPlayer: AVAudioPlayer?
+    private var dashQuackPlayer: AVAudioPlayer?
+    
+    init() {
+        setupAudioPlayers()
+    }
+    
+    private func setupAudioPlayers() {
+        // Setup audio session
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            print("Failed to set up audio session: \(error.localizedDescription)")
+        }
+        
+        // Load the quack sounds
+        if let dotSoundURL = Bundle.main.url(forResource: "short_quack", withExtension: "mp3") {
+            do {
+                dotQuackPlayer = try AVAudioPlayer(contentsOf: dotSoundURL)
+                dotQuackPlayer?.prepareToPlay()
+            } catch {
+                print("Could not load dot quack sound: \(error.localizedDescription)")
+            }
+        }
+        
+        if let dashSoundURL = Bundle.main.url(forResource: "long_quack", withExtension: "mp3") {
+            do {
+                dashQuackPlayer = try AVAudioPlayer(contentsOf: dashSoundURL)
+                dashQuackPlayer?.prepareToPlay()
+            } catch {
+                print("Could not load dash quack sound: \(error.localizedDescription)")
+            }
+        }
+    }
     
     // Start flashing the Morse code
     func startFlashing(for morseCode: String) {
@@ -107,9 +144,28 @@ class MorseCodeEncoder: ObservableObject {
         if element.isLight {
             // Turn on the flashlight
             toggleFlash(on: true)
+            
+            // Play quack sound if enabled
+            if isSoundEnabled {
+                playQuackForElement(element)
+            }
         } else {
             // Turn off the flashlight for gaps
             toggleFlash(on: false)
+        }
+    }
+    
+    // Play quack sound for the current element
+    private func playQuackForElement(_ element: MorseElement) {
+        switch element {
+        case .dot:
+            dotQuackPlayer?.currentTime = 0
+            dotQuackPlayer?.play()
+        case .dash:
+            dashQuackPlayer?.currentTime = 0
+            dashQuackPlayer?.play()
+        default:
+            break // No sound for gaps
         }
     }
     
@@ -146,6 +202,10 @@ class MorseCodeEncoder: ObservableObject {
         isFlashing = false
         toggleFlash(on: false)
         currentElementIndex = 0
+        
+        // Stop any playing sounds
+        dotQuackPlayer?.stop()
+        dashQuackPlayer?.stop()
     }
     
     // Toggle the device flashlight
@@ -165,5 +225,10 @@ class MorseCodeEncoder: ObservableObject {
                 print("Torch could not be used: \(error.localizedDescription)")
             }
         }
+    }
+    
+    // Toggle sound on/off
+    func toggleSound(enabled: Bool) {
+        isSoundEnabled = enabled
     }
 }
