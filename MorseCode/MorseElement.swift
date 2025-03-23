@@ -5,7 +5,6 @@
 //  Created by Joseph Brinker on 3/22/25.
 //
 
-
 import SwiftUI
 import AVFoundation
 
@@ -33,17 +32,50 @@ enum MorseElement: Equatable {
         default: return false
         }
     }
+    
+    var soundFileName: String? {
+        switch self {
+        case .dot: return "dot"
+        case .dash: return "dash"
+        default: return nil
+        }
+    }
+}
+
+class AudioPlayer {
+    private var audioPlayer: AVAudioPlayer?
+    
+    func playSound(named fileName: String) {
+        guard let soundURL = Bundle.main.url(forResource: fileName, withExtension: "wav") else {
+            print("Sound file not found: \(fileName)")
+            return
+        }
+        
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
+            audioPlayer?.prepareToPlay()
+            audioPlayer?.play()
+        } catch {
+            print("Failed to play sound: \(error)")
+        }
+    }
+    
+    func stopSound() {
+        audioPlayer?.stop()
+    }
 }
 
 class MorseCodeEncoder: ObservableObject {
     // Published properties to be observed by views
     @Published var isFlashing: Bool = false
     @Published var flashColor: Color = .black
+    @Published var isPlaying: Bool = false
     
     // Private properties
     private var morseSequence: [MorseElement] = []
     private var currentElementIndex: Int = 0
     private var timer: Timer?
+    private let audioPlayer = AudioPlayer()
     
     // Start flashing the Morse code
     func startFlashing(for morseCode: String) {
@@ -107,6 +139,11 @@ class MorseCodeEncoder: ObservableObject {
         if element.isLight {
             // Turn on the flashlight
             toggleFlash(on: true)
+            
+            // Play sound for the element
+            if let soundFileName = element.soundFileName {
+                audioPlayer.playSound(named: soundFileName)
+            }
         } else {
             // Turn off the flashlight for gaps
             toggleFlash(on: false)
@@ -145,11 +182,12 @@ class MorseCodeEncoder: ObservableObject {
         timer = nil
         isFlashing = false
         toggleFlash(on: false)
+        audioPlayer.stopSound()
         currentElementIndex = 0
     }
     
     // Toggle the device flashlight
-    func toggleFlash(on: Bool) {
+    private func toggleFlash(on: Bool) {
         guard let device = AVCaptureDevice.default(for: .video) else { return }
         
         if device.hasTorch && device.isTorchAvailable {

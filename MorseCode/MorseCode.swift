@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import AVFoundation
 
 struct MorseCode {
     // Morse code dictionary for encoding
@@ -50,12 +51,18 @@ struct MorseCode {
             }
         }
         
-        return morseCode
+        return morseCode.trimmingCharacters(in: .whitespaces)
     }
     
     // Convert morse code to text
     static func morseToText(_ morse: String) -> String {
-        let morseWords = morse.components(separatedBy: " / ")
+        // Preprocess morse code string to handle special characters
+        var processedMorse = morse
+            .replacingOccurrences(of: "…", with: "...")
+            .replacingOccurrences(of: "—", with: "--")
+            .replacingOccurrences(of: "–", with: "----")
+        
+        let morseWords = processedMorse.components(separatedBy: " / ")
         var result = ""
         
         for morseWord in morseWords {
@@ -69,5 +76,45 @@ struct MorseCode {
         }
         
         return result.trimmingCharacters(in: .whitespaces)
+    }
+}
+
+// MARK: - Morse Audio Player
+class MorseAudioPlayer {
+    private var audioPlayer: AVAudioPlayer?
+    private let dotSound: URL?
+    private let dashSound: URL?
+    
+    init() {
+        // Initialize sound file URLs
+        dotSound = Bundle.main.url(forResource: "dot", withExtension: "wav")
+        dashSound = Bundle.main.url(forResource: "dash", withExtension: "wav")
+    }
+    
+    func playDot() {
+        playSound(url: dotSound)
+    }
+    
+    func playDash() {
+        playSound(url: dashSound)
+    }
+    
+    func stopSound() {
+        audioPlayer?.stop()
+    }
+    
+    private func playSound(url: URL?) {
+        guard let soundURL = url else {
+            print("Sound file not found")
+            return
+        }
+        
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
+            audioPlayer?.prepareToPlay()
+            audioPlayer?.play()
+        } catch {
+            print("Failed to play sound: \(error)")
+        }
     }
 }

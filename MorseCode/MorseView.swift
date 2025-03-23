@@ -18,6 +18,11 @@ struct MorseView: View {
                     Label("Find Courses", systemImage: "map")
                 }
                 .tag(0)
+            MorseCodeView()
+                .tabItem {
+                    Label("Morse Code", systemImage: "list.bullet")
+                }
+                .tag(1)
         }
     }
 }

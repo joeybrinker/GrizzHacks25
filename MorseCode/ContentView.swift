@@ -80,28 +80,30 @@ struct ContentView: View {
                         }
                     }
                     
-                    // Flash button
+                    // Button to play morse code with sound and flash
                     Button(action: {
                         if morseEncoder.isFlashing {
                             morseEncoder.stopFlashing()
                         } else {
-                            morseEncoder.startFlashing(for: outputText)
+                            // Make sure we always pass Morse code format
+                            let morseToFlash = isEncodingMode ? outputText : inputText
+                            morseEncoder.startFlashing(for: morseToFlash)
                         }
                     }) {
                         HStack {
-                            Image(systemName: morseEncoder.isFlashing ? "stop.fill" : "bolt.fill")
-                            Text(morseEncoder.isFlashing ? "Stop Flashing" : "Flash Morse Code")
+                            Image(systemName: morseEncoder.isFlashing ? "stop.fill" : "play.fill")
+                            Text(morseEncoder.isFlashing ? "Stop" : "Play Morse Code")
                         }
                         .font(.headline)
                         .foregroundColor(.white)
                         .padding()
                         .frame(maxWidth: .infinity)
-                        .background(morseEncoder.isFlashing ? Color.red : Color.black)
+                        .background(morseEncoder.isFlashing ? Color.red : Color.blue)
                         .cornerRadius(10)
                         .padding(.horizontal)
                     }
-                    .disabled(!isEncodingMode || outputText.isEmpty)
-                    .opacity(!isEncodingMode || outputText.isEmpty ? 0.6 : 1.0)
+                    .disabled(outputText.isEmpty)
+                    .opacity(outputText.isEmpty ? 0.6 : 1.0)
                     
                     // Copy button
                     Button(action: {
@@ -171,12 +173,5 @@ struct ContentView: View {
 extension View {
     func hideKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-
-    }
-}
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
     }
 }
