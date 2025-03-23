@@ -15,12 +15,12 @@ struct MorseView: View {
         TabView(selection: $selectedTabIndex) {
             ContentView()
                 .tabItem {
-                    Label("Find Courses", systemImage: "map")
+                    Label("Translate", systemImage: "translate")
                 }
                 .tag(0)
             MorseCodeView()
                 .tabItem {
-                    Label("Morse Code", systemImage: "list.bullet")
+                    Label("Two Way", systemImage: "ellipsis.message.fill")
                 }
                 .tag(1)
         }
