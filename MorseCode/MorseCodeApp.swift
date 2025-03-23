@@ -11,7 +11,6 @@ import SwiftUI
 struct MorseCodeApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
-        }
+            MorseView()        }
     }
 }
